@@ -1,6 +1,5 @@
 import { Solar, Lunar } from 'lunar-javascript';
 
-// Translation map for Stems (Tian Gan)
 const STEMS = {
     '甲': { name: 'Jia Wood', nameTH: 'ไม้กะ (Jia)', element: 'Wood', elementTH: 'ไม้', polarity: '+' },
     '乙': { name: 'Yi Wood', nameTH: 'ไม้อี้ (Yi)', element: 'Wood', elementTH: 'ไม้', polarity: '-' },
@@ -14,93 +13,91 @@ const STEMS = {
     '癸': { name: 'Gui Water', nameTH: 'น้ำกุ่ย (Gui)', element: 'Water', elementTH: 'น้ำ', polarity: '-' },
 };
 
-// Translation map for Branches (Di Zhi)
 const BRANCHES = {
-    '子': { name: 'Rat', nameTH: 'ชวด (หนู)', element: 'Water', elementTH: 'น้ำ', yinYang: '+', hidden: ['癸'] },
-    '丑': { name: 'Ox', nameTH: 'ฉลู (วัว)', element: 'Earth', elementTH: 'ดิน', yinYang: '-', hidden: ['己', '癸', '辛'] },
-    '寅': { name: 'Tiger', nameTH: 'ขาล (เสือ)', element: 'Wood', elementTH: 'ไม้', yinYang: '+', hidden: ['甲', '丙', '戊'] },
-    '卯': { name: 'Rabbit', nameTH: 'เถาะ (กระต่าย)', element: 'Wood', elementTH: 'ไม้', yinYang: '-', hidden: ['乙'] },
-    '辰': { name: 'Dragon', nameTH: 'มะโรง (มังกร)', element: 'Earth', elementTH: 'ดิน', yinYang: '+', hidden: ['戊', '乙', '癸'] },
-    '巳': { name: 'Snake', nameTH: 'มะเส็ง (งู)', element: 'Fire', elementTH: 'ไฟ', yinYang: '-', hidden: ['丙', '庚', '戊'] },
-    '午': { name: 'Horse', nameTH: 'มะเมีย (ม้า)', element: 'Fire', elementTH: 'ไฟ', yinYang: '+', hidden: ['丁', '己'] },
-    '未': { name: 'Goat', nameTH: 'มะแม (แพะ)', element: 'Earth', elementTH: 'ดิน', yinYang: '-', hidden: ['己', '丁', '乙'] },
-    '申': { name: 'Monkey', nameTH: 'วอก (ลิง)', element: 'Metal', elementTH: 'ทอง', yinYang: '+', hidden: ['庚', '壬', '戊'] },
-    '酉': { name: 'Rooster', nameTH: 'ระกา (ไก่)', element: 'Metal', elementTH: 'ทอง', yinYang: '-', hidden: ['辛'] },
-    '戌': { name: 'Dog', nameTH: 'จอ (หมา)', element: 'Earth', elementTH: 'ดิน', yinYang: '+', hidden: ['戊', '辛', '丁'] },
-    '亥': { name: 'Pig', nameTH: 'กุน (หมู)', element: 'Water', elementTH: 'น้ำ', yinYang: '-', hidden: ['壬', '甲'] },
+    '子': { name: 'Rat', nameTH: 'ชวด (หนู)', element: 'Water', elementTH: 'น้ำ', hidden: ['癸'] },
+    '丑': { name: 'Ox', nameTH: 'ฉลู (วัว)', element: 'Earth', elementTH: 'ดิน', hidden: ['己', '癸', '辛'] },
+    '寅': { name: 'Tiger', nameTH: 'ขาล (เสือ)', element: 'Wood', elementTH: 'ไม้', hidden: ['甲', '丙', '戊'] },
+    '卯': { name: 'Rabbit', nameTH: 'เถาะ (กระต่าย)', element: 'Wood', elementTH: 'ไม้', hidden: ['乙'] },
+    '辰': { name: 'Dragon', nameTH: 'มะโรง (มังกร)', element: 'Earth', elementTH: 'ดิน', hidden: ['戊', '乙', '癸'] },
+    '巳': { name: 'Snake', nameTH: 'มะเส็ง (งู)', element: 'Fire', elementTH: 'ไฟ', hidden: ['丙', '庚', '戊'] },
+    '午': { name: 'Horse', nameTH: 'มะเมีย (ม้า)', element: 'Fire', elementTH: 'ไฟ', hidden: ['丁', '己'] },
+    '未': { name: 'Goat', nameTH: 'มะแม (แพะ)', element: 'Earth', elementTH: 'ดิน', hidden: ['己', '丁', '乙'] },
+    '申': { name: 'Monkey', nameTH: 'วอก (ลิง)', element: 'Metal', elementTH: 'ทอง', hidden: ['庚', '壬', '戊'] },
+    '酉': { name: 'Rooster', nameTH: 'ระกา (ไก่)', element: 'Metal', elementTH: 'ทอง', hidden: ['辛'] },
+    '戌': { name: 'Dog', nameTH: 'จอ (หมา)', element: 'Earth', elementTH: 'ดิน', hidden: ['戊', '辛', '丁'] },
+    '亥': { name: 'Pig', nameTH: 'กุน (หมู)', element: 'Water', elementTH: 'น้ำ', hidden: ['壬', '甲'] },
 };
 
-// 10 Gods (Shi Shen) Lookup
 const GODS = {
-    'Friend': { name: 'Friend', nameTH: 'เพื่อน', short: 'FR', chinese: '比肩' },
-    'RobWealth': { name: 'Rob Wealth', nameTH: 'แย่งลาภ', short: 'RW', chinese: '劫財' },
-    'EatingGod': { name: 'Eating God', nameTH: 'กิน', short: 'EG', chinese: '食神' },
-    'HurtingOfficer': { name: 'Hurting Officer', nameTH: 'ทำลายยศ', short: 'HO', chinese: '傷官' },
-    'DirectWealth': { name: 'Direct Wealth', nameTH: 'ลาภตรง', short: 'DW', chinese: '正財' },
-    'IndirectWealth': { name: 'Indirect Wealth', nameTH: 'ลาภลอย', short: 'IW', chinese: '偏財' },
-    'DirectOfficer': { name: 'Direct Officer', nameTH: 'ขุนนาง', short: 'DO', chinese: '正官' },
-    'SevenKillings': { name: 'Seven Killings', nameTH: 'เจ็ดอสูร', short: '7K', chinese: '七殺' },
-    'DirectResource': { name: 'Direct Resource', nameTH: 'คุณธรรม', short: 'DR', chinese: '正印' },
-    'IndirectResource': { name: 'Indirect Resource', nameTH: 'ก้าวหน้า', short: 'IR', chinese: '偏印' },
+    'Friend': { name: 'Friend', short: 'FR', chinese: '比' },
+    'RobWealth': { name: 'Rob Wealth', short: 'RW', chinese: '劫' },
+    'EatingGod': { name: 'Eating God', short: 'EG', chinese: '食' },
+    'HurtingOfficer': { name: 'Hurting Officer', short: 'HO', chinese: '伤' },
+    'DirectWealth': { name: 'Direct Wealth', short: 'DW', chinese: '财' },
+    'IndirectWealth': { name: 'Indirect Wealth', short: 'IW', chinese: '才' },
+    'DirectOfficer': { name: 'Direct Officer', short: 'DO', chinese: '官' },
+    'SevenKillings': { name: 'Seven Killings', short: '7K', chinese: '杀' },
+    'DirectResource': { name: 'Direct Resource', short: 'DR', chinese: '印' },
+    'IndirectResource': { name: 'Indirect Resource', short: 'IR', chinese: '枭' },
 };
+
+const RELATIONSHIPS = {
+    STEM: {
+        HA: { '甲': '己', '己': '甲', '乙': '庚', '庚': '乙', '丙': '辛', '辛': '丙', '丁': '壬', '壬': '丁', '戊': '癸', '癸': '戊' },
+        CHONG: { '甲': '庚', '庚': '甲', '乙': '辛', '辛': '乙', '丙': '壬', '壬': '丙', '丁': '癸', '癸': '丁' }
+    },
+    BRANCH: {
+        HA: { '子': '丑', '丑': '子', '寅': '亥', '亥': '寅', '卯': '戌', '戌': '卯', '辰': '酉', '酉': '辰', '巳': '申', '申': '巳', '午': '未', '未': '午' },
+        CHONG: { '子': '午', '午': '子', '丑': '未', '未': '丑', '寅': '申', '申': '寅', '卯': '酉', '酉': '卯', '辰': '戌', '戌': '辰', '巳': '亥', '亥': '巳' },
+        HAI: { '子': '未', '未': '子', '丑': '午', '午': '丑', '寅': '巳', '巳': '寅', '卯': '辰', '辰': '卯', '申': '亥', '亥': '申', '酉': '戌', '戌': '酉' },
+        PO: { '子': '酉', '酉': '子', '卯': '午', '午': '卯', '寅': '亥', '亥': '寅', '巳': '申', '申': '巳', '辰': '丑', '丑': '辰', '未': '戌', '戌': '未' }
+    }
+};
+
+function getRelationalStatus(char, type, pool, dmChar) {
+    if (!char) return 'Normal';
+    const c = char;
+    const table = RELATIONSHIPS[type];
+
+    // Priority 1: Ha with Day Master (Always Blue/Normal in this style)
+    if (type === 'STEM' && dmChar && table.HA[c] === dmChar) return 'Normal';
+
+    // Priority 2: Stressful relationships (Red)
+    if (table.CHONG[c] && pool.includes(table.CHONG[c])) return 'Clash';
+    if (type === 'BRANCH') {
+        if (table.HAI[c] && pool.includes(table.HAI[c])) return 'Clash';
+        if (table.PO[c] && pool.includes(table.PO[c])) return 'Clash';
+    }
+
+    // Priority 3: Positive relationships (Green)
+    if (table.HA[c] && pool.includes(table.HA[c])) return 'Ha';
+
+    return 'Normal';
+}
 
 const ELEMENTS = ['Wood', 'Fire', 'Earth', 'Metal', 'Water'];
 
 function getElementResult(me, other) {
+    if (!me || !other) return 'Unknown';
     const meIdx = ELEMENTS.indexOf(me.element);
     const otherIdx = ELEMENTS.indexOf(other.element);
-
     if (meIdx === -1 || otherIdx === -1) return null;
 
-    // Same
-    if (meIdx === otherIdx) {
-        return me.polarity === other.polarity ? 'Friend' : 'RobWealth';
-    }
-
-    // Me Generates Other (Output)
-    if ((meIdx + 1) % 5 === otherIdx) {
-        return me.polarity === other.polarity ? 'EatingGod' : 'HurtingOfficer';
-    }
-
-    // Me Controls Other (Wealth)
-    // Wood(0) -> Earth(2). (0+2)%5 = 2.
-    if ((meIdx + 2) % 5 === otherIdx) {
-        return me.polarity === other.polarity ? 'IndirectWealth' : 'DirectWealth';
-    }
-
-    // Other Controls Me (Influence/Power)
-    // Metal(3) -> Wood(0). (3+2)%5 = 0. OR (0-2+5)%5 = 3
-    if ((otherIdx + 2) % 5 === meIdx) {
-        return me.polarity === other.polarity ? 'SevenKillings' : 'DirectOfficer';
-    }
-
-    // Other Generates Me (Resource)
-    if ((otherIdx + 1) % 5 === meIdx) {
-        return me.polarity === other.polarity ? 'IndirectResource' : 'DirectResource';
-    }
-
+    if (meIdx === otherIdx) return me.polarity === other.polarity ? 'Friend' : 'RobWealth';
+    if ((meIdx + 1) % 5 === otherIdx) return me.polarity === other.polarity ? 'EatingGod' : 'HurtingOfficer';
+    if ((meIdx + 2) % 5 === otherIdx) return me.polarity === other.polarity ? 'IndirectWealth' : 'DirectWealth';
+    if ((otherIdx + 2) % 5 === meIdx) return me.polarity === other.polarity ? 'SevenKillings' : 'DirectOfficer';
+    if ((otherIdx + 1) % 5 === meIdx) return me.polarity === other.polarity ? 'IndirectResource' : 'DirectResource';
     return 'Unknown';
 }
 
-
 export function calculateBazi(dateString, timeString, gender = 'Male') {
-    // Parsing Input
-    // Standard format YYYY-MM-DD, HH:mm
     const [year, month, day] = dateString.split('-').map(Number);
     const [hour, minute] = timeString.split(':').map(Number);
-
-    // 1. Create Solar Object
     const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0);
+    const eightChar = solar.getLunar().getEightChar();
+    eightChar.setSect(2);
 
-    // 2. Convert to Lunar
-    const lunar = solar.getLunar();
-
-    // 3. Get Eight Characters (BaZi)
-    // Note: Lunar Javascript handles Start of Spring (Li Chun) automatically for Year Pillar
-    const eightChar = lunar.getEightChar();
-    eightChar.setSect(2); // Use Mode 2 (Traditional/Standard) usually implies starts year at Li Chun
-
-    // Extract Pillars
     const yearGan = eightChar.getYearGan();
     const yearZhi = eightChar.getYearZhi();
     const monthGan = eightChar.getMonthGan();
@@ -110,141 +107,57 @@ export function calculateBazi(dateString, timeString, gender = 'Male') {
     const hourGan = eightChar.getTimeGan();
     const hourZhi = eightChar.getTimeZhi();
 
-    const dayMaster = STEMS[dayGan];
+    const dm = STEMS[dayGan];
+    const chartStems = [yearGan, monthGan, hourGan];
+    const chartBranches = [yearZhi, monthZhi, dayZhi, hourZhi];
 
-    // Helper to structure a pillar
-    const processPillar = (gan, zhi, name) => {
-        const ganInfo = STEMS[gan];
-        const zhiInfo = BRANCHES[zhi];
+    const processLP = (lGan, lZhi, startAge, startYear) => {
+        const annualPillars = [];
+        const contextStems = [...chartStems, lGan];
+        const contextBranches = [...chartBranches, lZhi];
 
-        // 10 God for Stem
-        const stemGodKey = getElementResult(dayMaster, ganInfo);
-        const stemGod = GODS[stemGodKey];
+        for (let j = 0; j < 10; j++) {
+            const aYear = startYear + j;
+            const aSolar = Solar.fromYmdHms(aYear, 6, 15, 12, 0, 0);
+            const aGZ = aSolar.getLunar().getEightChar().getYearInGanZhi();
+            const aGan = aGZ.charAt(0);
+            const aZhi = aGZ.charAt(1);
 
-        // Hidden Stems & Gods
-        const hiddenStems = zhiInfo.hidden.map(h => {
-            const hInfo = STEMS[h];
-            const hGodKey = getElementResult(dayMaster, hInfo);
-            return {
-                char: h,
-                ...hInfo,
-                god: GODS[hGodKey]
-            };
-        });
-
+            annualPillars.push({
+                year: aYear,
+                gan: { char: aGan, ...STEMS[aGan], god: GODS[getElementResult(dm, STEMS[aGan])], status: getRelationalStatus(aGan, 'STEM', contextStems, dayGan) },
+                zhi: { char: aZhi, ...BRANCHES[aZhi], god: GODS[getElementResult(dm, BRANCHES[aZhi])], status: getRelationalStatus(aZhi, 'BRANCH', contextBranches, null) }
+            });
+        }
         return {
-            name,
-            gan: { char: gan, ...ganInfo, god: stemGod },
-            zhi: { char: zhi, ...zhiInfo, hiddenStems },
+            startAge, startYear,
+            gan: { char: lGan, ...STEMS[lGan], god: GODS[getElementResult(dm, STEMS[lGan])], status: getRelationalStatus(lGan, 'STEM', chartStems, dayGan) },
+            zhi: { char: lZhi, ...BRANCHES[lZhi], status: getRelationalStatus(lZhi, 'BRANCH', chartBranches, null) },
+            annualPillars
         };
     };
 
-    const pillars = {
-        year: processPillar(yearGan, yearZhi, 'Year'),
-        month: processPillar(monthGan, monthZhi, 'Month'),
-        day: processPillar(dayGan, dayZhi, 'Day'),
-        hour: processPillar(hourGan, hourZhi, 'Hour'),
-    };
-
-    // Luck Pillars (Manual Calculation)
-    // Define ordered arrays for calculation
-    const STEM_ORDER = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
-    const BRANCH_ORDER = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-
-    const genderNum = gender === 'Male' ? 1 : 0;
-    const yearGanPol = STEMS[yearGan].polarity;
-    const yearIsYang = yearGanPol === '+';
-    const genderIsMale = gender === 'Male';
-
-    // Forward if: (Male & Year Yang) OR (Female & Year Yin)
-    const forward = (genderIsMale && yearIsYang) || (!genderIsMale && !yearIsYang);
-    const direction = forward ? 1 : -1;
-
-    let currentGanIdx = STEM_ORDER.indexOf(monthGan);
-    let currentZhiIdx = BRANCH_ORDER.indexOf(monthZhi);
-
-    const yun = eightChar.getYun(genderNum);
-    const daYunArr = yun.getDaYun();
-
     const luckPillars = [];
-
+    const daYunArr = eightChar.getYun(gender === 'Male' ? 1 : 0).getDaYun();
     for (let i = 0; i < 10; i++) {
-        currentGanIdx = (currentGanIdx + direction + 10) % 10;
-        currentZhiIdx = (currentZhiIdx + direction + 12) % 12;
-
-        const gan = STEM_ORDER[currentGanIdx];
-        const zhi = BRANCH_ORDER[currentZhiIdx];
-
-        // Get Start Age from Library or approximate
-        // Library gave 1. Usually valid.
-        let startAge = 1 + (i * 10);
-        let startYear = year + startAge;
-
-        // Try to use library info if available/valid, otherwise fallback
-        if (daYunArr[i] && daYunArr[i].getStartAge()) {
-            startAge = daYunArr[i].getStartAge();
-            startYear = daYunArr[i].getStartYear();
+        const dy = daYunArr[i];
+        if (dy) {
+            luckPillars.push(processLP(dy.getGanZhi().charAt(0), dy.getGanZhi().charAt(1), dy.getStartAge(), dy.getStartYear()));
         }
-
-        const ganInfo = STEMS[gan];
-        const zhiInfo = BRANCHES[zhi];
-        const godKey = getElementResult(dayMaster, ganInfo);
-
-        // Calculate 10 Annual Pillars (Liu Nian) for this Luck Pillar
-        const annualPillars = [];
-        for (let j = 0; j < 10; j++) {
-            const annualYear = startYear + j;
-            const annualSolar = Solar.fromYmdHms(annualYear, 6, 15, 12, 0, 0);
-            const annualLunar = annualSolar.getLunar();
-            const annualGanZhi = annualLunar.getYearInGanZhi();
-
-            const aGan = annualGanZhi.substring(0, 1);
-            const aZhi = annualGanZhi.substring(1, 2);
-
-            const aGanInfo = STEMS[aGan];
-            const aZhiInfo = BRANCHES[aZhi];
-            const aGodKey = getElementResult(dayMaster, aGanInfo);
-
-            annualPillars.push({
-                year: annualYear,
-                gan: { char: aGan, ...aGanInfo, god: GODS[aGodKey] },
-                zhi: { char: aZhi, ...aZhiInfo }
-            });
-        }
-
-        luckPillars.push({
-            startAge,
-            startYear,
-            gan: { char: gan, ...ganInfo, god: GODS[godKey] },
-            zhi: { char: zhi, ...zhiInfo },
-            annualPillars
-        });
     }
 
-    // Basic Analysis (Counting Elements)
-    const stats = {
-        Wood: 0, Fire: 0, Earth: 0, Metal: 0, Water: 0
+    const processPillar = (gan, zhi, name) => {
+        const hS = BRANCHES[zhi].hidden.map(h => ({ char: h, ...STEMS[h], god: GODS[getElementResult(dm, STEMS[h])] }));
+        return { name, gan: { char: gan, ...STEMS[gan], god: GODS[getElementResult(dm, STEMS[gan])] }, zhi: { char: zhi, ...BRANCHES[zhi], hiddenStems: hS } };
     };
 
-    // Count Stems
-    [yearGan, monthGan, dayGan, hourGan].forEach(g => {
-        stats[STEMS[g].element]++;
-    });
-    // Count Branches (Main Energy)
-    [yearZhi, monthZhi, dayZhi, hourZhi].forEach(z => {
-        stats[BRANCHES[z].element]++;
-    });
-
-    // Transform stats keys to Thai if needed or handle in UI
-    // We keep keys as English for logic, but UI will map them.
+    const stats = { Wood: 0, Fire: 0, Earth: 0, Metal: 0, Water: 0 };
+    [yearGan, monthGan, dayGan, hourGan].forEach(g => stats[STEMS[g].element]++);
+    [yearZhi, monthZhi, dayZhi, hourZhi].forEach(z => stats[BRANCHES[z].element]++);
 
     return {
-        solar: solar.toString(),
-        lunar: lunar.toString(),
-        dayMaster: { ...dayMaster, char: dayGan }, // Add character explicitly
-        pillars,
-        luckPillars,
-        stats,
-        gender
+        dayMaster: { ...dm, char: dayGan },
+        pillars: { year: processPillar(yearGan, yearZhi, 'Year'), month: processPillar(monthGan, monthZhi, 'Month'), day: processPillar(dayGan, dayZhi, 'Day'), hour: processPillar(hourGan, hourZhi, 'Hour') },
+        luckPillars, stats, gender
     };
 }
