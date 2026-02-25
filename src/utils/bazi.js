@@ -119,7 +119,7 @@ export function calculateBazi(dateString, timeString, gender = 'Male') {
         for (let j = 0; j < 10; j++) {
             const aYear = startYear + j;
             const aSolar = Solar.fromYmdHms(aYear, 6, 15, 12, 0, 0);
-            const aGZ = aSolar.getLunar().getEightChar().getYearInGanZhi();
+            const aGZ = aSolar.getLunar().getYearInGanZhi();
             const aGan = aGZ.charAt(0);
             const aZhi = aGZ.charAt(1);
 
