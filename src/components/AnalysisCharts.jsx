@@ -71,38 +71,69 @@ export default function AnalysisCharts({ data }) {
 
 
     return (
-        <div className="bg-white rounded shadow-sm border border-stone-200 p-6 flex flex-col md:flex-row gap-8 max-w-4xl mx-auto w-full">
+        <div className="bg-white border border-stone-200 rounded-xl p-6 flex flex-col md:flex-row gap-8 w-full shadow-md shadow-stone-200/30">
 
             {/* Radar Chart */}
             <div className="flex-1 flex flex-col items-center justify-center">
-                <h3 className="text-sm font-bold text-stone-500 uppercase tracking-widest mb-4">โครงสร้างดวง (5 Structures)</h3>
-                <svg width="300" height="300" viewBox="0 0 300 300" className="border border-stone-50 rounded-full bg-stone-50/20">
-                    <PolarGrid />
-                    <polygon points={points} fill="rgba(225, 29, 72, 0.1)" stroke="#be123c" strokeWidth="2" />
+                <h3 className="text-sm font-bold text-stone-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
+                    โครงสร้างดวง (5 Structures)
+                </h3>
+                <svg width="300" height="300" viewBox="0 0 300 300" className="border border-stone-100 rounded-full bg-stone-50">
+                    <g className="text-stone-300">
+                        {[20, 40, 60, 80, 100].map(r => (
+                            <circle key={r} cx="150" cy="150" r={r} fill="none" stroke="currentColor" strokeDasharray="3 3" />
+                        ))}
+                        {[0, 72, 144, 216, 288].map(deg => {
+                            const rad = (deg - 90) * Math.PI / 180;
+                            const x = 150 + 100 * Math.cos(rad);
+                            const y = 150 + 100 * Math.sin(rad);
+                            return <line key={deg} x1="150" y1="150" x2={x} y2={y} stroke="currentColor" strokeWidth="1" />;
+                        })}
+                    </g>
+                    <polygon points={points} fill="rgba(217, 119, 6, 0.1)" stroke="#d97706" strokeWidth="1.5" />
                     {structures.map((s, i) => {
                         const angle = (i * 72 - 90) * Math.PI / 180;
                         const r = (s.value / maxVal) * 100;
                         const x = 150 + r * Math.cos(angle);
                         const y = 150 + r * Math.sin(angle);
-                        return <circle key={i} cx={x} cy={y} r="3" fill="#be123c" />;
+                        return <circle key={i} cx={x} cy={y} r="3.5" fill="#d97706" />;
                     })}
-                    {labels}
+                    {structures.map((s, i) => {
+                        const angle = (i * 72 - 90) * Math.PI / 180;
+                        const r = 130;
+                        const x = 150 + r * Math.cos(angle);
+                        const y = 150 + r * Math.sin(angle);
+                        return (
+                            <g key={s.name}>
+                                <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" className="text-xs font-bold fill-stone-700 font-serif">
+                                    {s.nameTH.split('/')[0]}
+                                </text>
+                                <text x={x} y={y + 12} textAnchor="middle" dominantBaseline="middle" className="text-[9px] fill-stone-400">
+                                    {s.value} ({ELEMENTS_TH[s.element]})
+                                </text>
+                            </g>
+                        );
+                    })}
                 </svg>
             </div>
 
             {/* Simple Stats List */}
             <div className="flex-1 flex flex-col justify-center">
-                <h3 className="text-sm font-bold text-stone-500 uppercase tracking-widest mb-6">กำลังธาตุ (Element Strength)</h3>
+                <h3 className="text-sm font-bold text-stone-500 uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
+                    กำลังธาตุ (Element Strength)
+                </h3>
                 <div className="space-y-4">
                     {structures.map((s) => (
-                        <div key={s.name}>
-                            <div className="flex justify-between text-sm mb-1 text-stone-700">
-                                <span className="font-serif">{s.nameTH}</span>
-                                <span className="font-bold">{s.value}</span>
+                        <div key={s.name} className="group">
+                            <div className="flex justify-between text-sm mb-1.5 text-stone-600">
+                                <span className="font-serif group-hover:text-amber-700 transition-colors duration-200">{s.nameTH}</span>
+                                <span className="font-bold text-stone-500 font-mono text-xs">{s.value}</span>
                             </div>
-                            <div className="w-full bg-stone-100 rounded-full h-2">
+                            <div className="w-full bg-stone-100 rounded-full h-1.5">
                                 <div
-                                    className="h-2 rounded-full bg-stone-600 transition-all duration-500"
+                                    className="h-full rounded-full bg-amber-600/80 transition-all duration-300"
                                     style={{ width: `${(s.value / 8) * 100}%` }} // Approximate scale
                                 ></div>
                             </div>

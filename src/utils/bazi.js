@@ -59,18 +59,19 @@ function getRelationalStatus(char, type, pool, dmChar) {
     const c = char;
     const table = RELATIONSHIPS[type];
 
-    // Priority 1: Ha with Day Master (Always Blue/Normal in this style)
+    // Priority 1: Ha with Day Master → Normal (Blue)
     if (type === 'STEM' && dmChar && table.HA[c] === dmChar) return 'Normal';
 
-    // Priority 2: Stressful relationships (Red)
-    if (table.CHONG[c] && pool.includes(table.CHONG[c])) return 'Clash';
+    // System C: Stem Clashes (天干冲) are NOT counted for color display.
+    // Only Branch clashes (地支冲/害/破) trigger Red.
     if (type === 'BRANCH') {
-        if (table.HAI[c] && pool.includes(table.HAI[c])) return 'Clash';
-        if (table.PO[c] && pool.includes(table.PO[c])) return 'Clash';
+        if (table.CHONG && table.CHONG[c] && pool.includes(table.CHONG[c])) return 'Clash';
+        if (table.HAI  && table.HAI[c]  && pool.includes(table.HAI[c]))  return 'Clash';
+        if (table.PO   && table.PO[c]   && pool.includes(table.PO[c]))   return 'Clash';
     }
 
-    // Priority 3: Positive relationships (Green)
-    if (table.HA[c] && pool.includes(table.HA[c])) return 'Ha';
+    // Priority 3: Ha combination → Green
+    if (table.HA && table.HA[c] && pool.includes(table.HA[c])) return 'Ha';
 
     return 'Normal';
 }
@@ -113,8 +114,18 @@ export function calculateBazi(dateString, timeString, gender = 'Male') {
 
     const processLP = (lGan, lZhi, startAge, startYear) => {
         const annualPillars = [];
-        const contextStems = [...chartStems, lGan];
-        const contextBranches = [...chartBranches, lZhi];
+        // Annual Stems: System C — no Stem clash, compare only for Ha detection
+        const annualStemPool = [lGan];
+        // Annual Branches: compare against birth chart via CHONG (冲) only
+        // Po/Hai are weaker and not counted for color display — gives balanced Red/Blue
+        const annualBranchChong = RELATIONSHIPS.BRANCH.CHONG;
+        const getAnnualZhiStatus = (zhi) => {
+            if (!zhi) return 'Normal';
+            if (annualBranchChong[zhi] && chartBranches.includes(annualBranchChong[zhi])) return 'Clash';
+            // Ha check: branch combines with luck pillar branch
+            if (RELATIONSHIPS.BRANCH.HA?.[zhi] && RELATIONSHIPS.BRANCH.HA[zhi] === lZhi) return 'Ha';
+            return 'Normal';
+        };
 
         for (let j = 0; j < 10; j++) {
             const aYear = startYear + j;
@@ -125,14 +136,14 @@ export function calculateBazi(dateString, timeString, gender = 'Male') {
 
             annualPillars.push({
                 year: aYear,
-                gan: { char: aGan, ...STEMS[aGan], god: GODS[getElementResult(dm, STEMS[aGan])], status: getRelationalStatus(aGan, 'STEM', contextStems, dayGan) },
-                zhi: { char: aZhi, ...BRANCHES[aZhi], god: GODS[getElementResult(dm, BRANCHES[aZhi])], status: getRelationalStatus(aZhi, 'BRANCH', contextBranches, null) }
+                gan: { char: aGan, ...STEMS[aGan], god: GODS[getElementResult(dm, STEMS[aGan])], status: getRelationalStatus(aGan, 'STEM', annualStemPool, dayGan) },
+                zhi: { char: aZhi, ...BRANCHES[aZhi], god: GODS[getElementResult(dm, BRANCHES[aZhi])], status: getAnnualZhiStatus(aZhi) }
             });
         }
         return {
             startAge, startYear,
             gan: { char: lGan, ...STEMS[lGan], god: GODS[getElementResult(dm, STEMS[lGan])], status: getRelationalStatus(lGan, 'STEM', chartStems, dayGan) },
-            zhi: { char: lZhi, ...BRANCHES[lZhi], status: getRelationalStatus(lZhi, 'BRANCH', chartBranches, null) },
+            zhi: { char: lZhi, ...BRANCHES[lZhi], god: GODS[getElementResult(dm, BRANCHES[lZhi])], status: getRelationalStatus(lZhi, 'BRANCH', chartBranches, null) },
             annualPillars
         };
     };
@@ -148,7 +159,22 @@ export function calculateBazi(dateString, timeString, gender = 'Male') {
 
     const processPillar = (gan, zhi, name) => {
         const hS = BRANCHES[zhi].hidden.map(h => ({ char: h, ...STEMS[h], god: GODS[getElementResult(dm, STEMS[h])] }));
-        return { name, gan: { char: gan, ...STEMS[gan], god: GODS[getElementResult(dm, STEMS[gan])] }, zhi: { char: zhi, ...BRANCHES[zhi], hiddenStems: hS } };
+        return {
+            name,
+            gan: {
+                char: gan,
+                ...STEMS[gan],
+                god: GODS[getElementResult(dm, STEMS[gan])],
+                status: getRelationalStatus(gan, 'STEM', chartStems, dayGan)
+            },
+            zhi: {
+                char: zhi,
+                ...BRANCHES[zhi],
+                hiddenStems: hS,
+                god: GODS[getElementResult(dm, BRANCHES[zhi])],
+                status: getRelationalStatus(zhi, 'BRANCH', chartBranches, null)
+            }
+        };
     };
 
     const stats = { Wood: 0, Fire: 0, Earth: 0, Metal: 0, Water: 0 };

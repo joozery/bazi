@@ -4,7 +4,8 @@ export default function BaziForm({ onCalculate }) {
     const [formData, setFormData] = useState({
         name: '',
         birthDate: new Date().toISOString().split('T')[0],
-        birthTime: new Date().toTimeString().split(' ')[0].substring(0, 5),
+        birthTimeStart: new Date().toTimeString().split(' ')[0].substring(0, 5),
+        birthTimeEnd: new Date().toTimeString().split(' ')[0].substring(0, 5),
         gender: 'Male',
     });
 
@@ -15,16 +16,37 @@ export default function BaziForm({ onCalculate }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onCalculate(formData);
+        
+        // Calculate average time for Bazi engine
+        const [h1, m1] = formData.birthTimeStart.split(':').map(Number);
+        const [h2, m2] = formData.birthTimeEnd.split(':').map(Number);
+        
+        let mins1 = h1 * 60 + m1;
+        let mins2 = h2 * 60 + m2;
+        
+        if (mins2 < mins1) {
+            mins2 += 24 * 60; // Crosses midnight
+        }
+        
+        let avgMins = Math.round((mins1 + mins2) / 2) % (24 * 60);
+        const avgH = Math.floor(avgMins / 60);
+        const avgM = avgMins % 60;
+        const computedTime = `${String(avgH).padStart(2, '0')}:${String(avgM).padStart(2, '0')}`;
+
+        onCalculate({
+            ...formData,
+            birthTime: computedTime
+        });
     };
 
     return (
-        <div className="bg-white p-8 rounded shadow-sm border border-stone-200 max-w-4xl mx-auto mb-12">
+        <div className="bg-white border border-stone-100 rounded-xl p-8 shadow-md shadow-stone-200/40 transition-shadow duration-300 hover:shadow-lg w-full">
             <div className="flex items-center justify-between mb-8 border-b border-stone-100 pb-4">
-                <h2 className="text-xl font-serif font-bold text-stone-800 tracking-wide">
-                    คำนวณดวงชะตา (Calculate)
+                <h2 className="text-lg font-serif font-bold text-stone-800 tracking-wide flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                    คำนวณดวงชะตา <span className="text-stone-400 font-light text-xs ml-1">(Calculate)</span>
                 </h2>
-                <span className="text-xs text-stone-400">กรอกข้อมูลให้ครบถ้วน</span>
+                <span className="text-xs text-stone-400 tracking-wider">กรอกข้อมูลให้ครบถ้วน</span>
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
@@ -36,7 +58,7 @@ export default function BaziForm({ onCalculate }) {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full bg-stone-50 border-b-2 border-stone-200 focus:border-stone-500 focus:outline-none px-2 py-2 transition-colors text-stone-800"
+                        className="w-full bg-stone-50 border border-stone-200 hover:border-stone-300 focus:border-amber-600 focus:ring-2 focus:ring-amber-600/10 focus:outline-none rounded-lg px-3 py-2 transition-all duration-200 text-stone-800 placeholder-stone-300 text-sm"
                         placeholder="ระบุชื่อ"
                     />
                 </div>
@@ -49,39 +71,49 @@ export default function BaziForm({ onCalculate }) {
                         name="birthDate"
                         value={formData.birthDate}
                         onChange={handleChange}
-                        className="w-full bg-stone-50 border-b-2 border-stone-200 focus:border-stone-500 focus:outline-none px-2 py-2 transition-colors text-stone-800"
+                        className="w-full bg-stone-50 border border-stone-200 hover:border-stone-300 focus:border-amber-600 focus:ring-2 focus:ring-amber-600/10 focus:outline-none rounded-lg px-3 py-2 transition-all duration-200 text-stone-800 text-sm"
                     />
                 </div>
 
-                {/* Time */}
+                {/* Time Range */}
                 <div className="md:col-span-1">
-                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">เวลาเกิด (Time)</label>
-                    <input
-                        type="time"
-                        name="birthTime"
-                        value={formData.birthTime}
-                        onChange={handleChange}
-                        className="w-full bg-stone-50 border-b-2 border-stone-200 focus:border-stone-500 focus:outline-none px-2 py-2 transition-colors text-stone-800"
-                    />
+                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">เวลาเกิด (Time Range)</label>
+                    <div className="flex items-center gap-1.5 bg-stone-50 rounded-lg border border-stone-200 p-1">
+                        <input
+                            type="time"
+                            name="birthTimeStart"
+                            value={formData.birthTimeStart}
+                            onChange={handleChange}
+                            className="bg-transparent border-none focus:outline-none text-stone-800 text-xs w-full px-1 min-w-[65px]"
+                        />
+                        <span className="text-stone-400 text-xs px-0.5">ถึง</span>
+                        <input
+                            type="time"
+                            name="birthTimeEnd"
+                            value={formData.birthTimeEnd}
+                            onChange={handleChange}
+                            className="bg-transparent border-none focus:outline-none text-stone-800 text-xs w-full px-1 min-w-[65px]"
+                        />
+                    </div>
                 </div>
 
                 {/* Gender */}
                 <div className="md:col-span-1">
                     <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">เพศ (Gender)</label>
-                    <div className="flex bg-stone-50 rounded p-1 border border-stone-200">
+                    <div className="flex bg-stone-50 rounded-lg p-1 border border-stone-200">
                         <button
                             type="button"
                             onClick={() => setFormData(prev => ({ ...prev, gender: 'Male' }))}
-                            className={`flex-1 py-1 text-sm rounded transition-all ${formData.gender === 'Male' ? 'bg-white shadow text-stone-800 font-bold' : 'text-stone-400'}`}
+                            className={`flex-1 py-1.5 text-xs rounded-md transition-all duration-200 ${formData.gender === 'Male' ? 'bg-white shadow-sm text-stone-800 font-bold border border-stone-200/60' : 'text-stone-400 hover:text-stone-600'}`}
                         >
-                            ชาย (Male)
+                            ชาย
                         </button>
                         <button
                             type="button"
                             onClick={() => setFormData(prev => ({ ...prev, gender: 'Female' }))}
-                            className={`flex-1 py-1 text-sm rounded transition-all ${formData.gender === 'Female' ? 'bg-white shadow text-stone-800 font-bold' : 'text-stone-400'}`}
+                            className={`flex-1 py-1.5 text-xs rounded-md transition-all duration-200 ${formData.gender === 'Female' ? 'bg-white shadow-sm text-stone-800 font-bold border border-stone-200/60' : 'text-stone-400 hover:text-stone-600'}`}
                         >
-                            หญิง (Female)
+                            หญิง
                         </button>
                     </div>
                 </div>
@@ -90,9 +122,9 @@ export default function BaziForm({ onCalculate }) {
                 <div className="md:col-span-4 flex justify-end mt-4">
                     <button
                         type="submit"
-                        className="bg-stone-800 text-stone-50 px-8 py-3 rounded-sm font-bold tracking-widest hover:bg-stone-700 transition shadow-lg active:scale-95"
+                        className="bg-stone-800 hover:bg-stone-700 text-stone-50 px-8 py-2 rounded-lg font-bold tracking-wider transition-all duration-200 shadow-md active:scale-95 text-sm"
                     >
-                        Send
+                        คำนวณ
                     </button>
                 </div>
             </form>
